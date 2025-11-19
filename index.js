@@ -108,6 +108,7 @@ function handleVlessConnection(ws, msg) {
   const id = msg.slice(1, 17);
   if (!id.every((v, i) => v == parseInt(uuid.substr(i * 2, 2), 16))) return false;
   let i = msg.slice(17, 18).readUInt8() + 19;
+  if (msg.length < i + 2) return false;
   const port = msg.slice(i, i += 2).readUInt16BE(0);
   const ATYP = msg.slice(i, i += 1).readUInt8();
   const host = ATYP == 1 ? msg.slice(i, i += 4).join('.') :
@@ -178,7 +179,8 @@ function handleTrojanConnection(ws, msg) {
     } else {
       return false;
     }
-    
+
+    if (msg.length < offset + 2) return false;
     port = msg.readUInt16BE(offset);
     offset += 2;
     
